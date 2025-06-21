@@ -1,19 +1,30 @@
+const resistorCount = 5;
 
 fetch("component images/resistor.svg")
     .then(response => response.text())
     .then(svg => {
-        document.getElementById("gameArea").innerHTML = svg;
-        enableDragging();
+        const gameArea = document.getElementById("gameArea");
+        gameArea.innerHTML = "";
+        
+        for(let i = 0; i < resistorCount; i++){
+            const wrapper = document.createElement("div");
+            wrapper.innerHTML = svg;
+            const svgElement = wrapper.firstElementChild;
+            svgElement.setAttribute("data-index", i);
+            gameArea.appendChild(svgElement);
+            enableDragging(svgElement);
+        }
+        
     });
 
-function enableDragging() {
-    const resistor = document.getElementById("resistor");
+function enableDragging(component) {
+
     let isDragging = false, offsetX, offsetY;
 
-    resistor.addEventListener("mousedown", (event) => {
+    component.addEventListener("mousedown", (event) => {
     isDragging = true;
 
-    let svg = resistor.closest("svg");
+    let svg = component.closest("svg");
     let point = svg.createSVGPoint();
     point.x = event.clientX;
     point.y = event.clientY;
@@ -27,7 +38,7 @@ function enableDragging() {
 document.addEventListener("mousemove", (event) => {
     if (!isDragging) return;
 
-    let svg = resistor.closest("svg");
+    let svg = component.closest("svg");
     let point = svg.createSVGPoint();
     point.x = event.clientX;
     point.y = event.clientY;
@@ -36,7 +47,7 @@ document.addEventListener("mousemove", (event) => {
     let x = transformPoint.x - offsetX;
     let y = transformPoint.y - offsetY;
 
-    resistor.setAttribute("transform", `translate(${x},${y})`);
+    component.setAttribute("transform", `translate(${x},${y})`);
 
 });
 
