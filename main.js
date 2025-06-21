@@ -18,39 +18,34 @@ fetch("component images/resistor.svg")
     });
 
 function enableDragging(component) {
-
     let isDragging = false, offsetX, offsetY;
 
     component.addEventListener("mousedown", (event) => {
-    isDragging = true;
+        isDragging = true;
+        let svg = component.closest("svg");
+        let point = svg.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        let transformPoint = point.matrixTransform(svg.getScreenCTM().inverse());
 
-    let svg = component.closest("svg");
-    let point = svg.createSVGPoint();
-    point.x = event.clientX;
-    point.y = event.clientY;
-    let transformPoint = point.matrixTransform(svg.getScreenCTM().inverse());
+        offsetX = transformPoint.x;
+        offsetY = transformPoint.y;
+    });
+    
+    document.addEventListener("mousemove", (event) => {
+        if (!isDragging) return;
 
-    offsetX = transformPoint.x;
-    offsetY = transformPoint.y;
+        let svg = component.closest("svg");
+        let point = svg.createSVGPoint();
+        point.x = event.clientX;
+        point.y = event.clientY;
+        let transformPoint = point.matrixTransform(svg.getScreenCTM().inverse());
 
-});
+        let x = transformPoint.x - offsetX;
+        let y = transformPoint.y - offsetY;
 
-document.addEventListener("mousemove", (event) => {
-    if (!isDragging) return;
+        component.setAttribute("transform", `translate(${x},${y})`);
+    });
 
-    let svg = component.closest("svg");
-    let point = svg.createSVGPoint();
-    point.x = event.clientX;
-    point.y = event.clientY;
-    let transformPoint = point.matrixTransform(svg.getScreenCTM().inverse());
-
-    let x = transformPoint.x - offsetX;
-    let y = transformPoint.y - offsetY;
-
-    component.setAttribute("transform", `translate(${x},${y})`);
-
-});
-
-document.addEventListener("mouseup", () => isDragging = false);
-
+    document.addEventListener("mouseup", () => isDragging = false);
 }
