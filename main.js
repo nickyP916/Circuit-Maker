@@ -1,11 +1,3 @@
-// // Get the element by id
-// const element = document.getElementById("draggable-1");
-// // Add the ondragstart event listener
-// element.addEventListener("dragstart", (ev) => {
-//   // Add the target element's id to the data transfer object
-//   ev.dataTransfer.setData("text/plain", ev.target.id);
-// });
-
 
 fetch("component images/resistor.svg")
     .then(response => response.text())
