@@ -14,3 +14,8 @@ html, body {
     height: 100vh;
     overflow: hidden; /* prevents scrollbars if the SVG is too large */
 }
+
+svg {
+  user-select: none;
+  -webkit-user-drag: none;
+}

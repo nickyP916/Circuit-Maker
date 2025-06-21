@@ -23,7 +23,7 @@ function enableDragging(svg) {
     let offset = { x: 0, y: 0 };
     let currentTransform = { x: 0, y: 0 };
 
-    svg.addEventListener("mousedown", (event) => {
+    svg.addEventListener("pointerdown", (event) => {
         isDragging = true;
 
         const point = svg.createSVGPoint();
@@ -44,7 +44,7 @@ function enableDragging(svg) {
         offset.y = cursor.y - currentTransform.y;
     });
     
-    document.addEventListener("mousemove", (event) => {
+    document.addEventListener("pointermove", (event) => {
         if (!isDragging) return;
 
         const point = svg.createSVGPoint();
@@ -58,5 +58,5 @@ function enableDragging(svg) {
         svg.setAttribute("transform", `translate(${x},${y})`);
     });
 
-    document.addEventListener("mouseup", () => isDragging = false);
+    document.addEventListener("pointerup", () => isDragging = false);
 }
