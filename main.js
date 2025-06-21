@@ -17,34 +17,45 @@ fetch("component images/resistor.svg")
         
     });
 
-function enableDragging(component) {
+function enableDragging(svg) {
     let isDragging = false, offsetX, offsetY;
 
-    component.addEventListener("mousedown", (event) => {
+    let offset = { x: 0, y: 0 };
+    let currentTransform = { x: 0, y: 0 };
+
+    svg.addEventListener("mousedown", (event) => {
         isDragging = true;
-        let svg = component.closest("svg");
-        let point = svg.createSVGPoint();
+
+        const point = svg.createSVGPoint();
         point.x = event.clientX;
         point.y = event.clientY;
-        let transformPoint = point.matrixTransform(svg.getScreenCTM().inverse());
+        const cursor = point.matrixTransform(svg.getScreenCTM().inverse());
 
-        offsetX = transformPoint.x;
-        offsetY = transformPoint.y;
+        // Read the current transform if one exists
+        const transform = svg.getAttribute("transform");
+        if (transform) {
+            const match = transform.match(/translate\(([^,]+),([^)]+)\)/);
+            if (match) {
+                currentTransform.x = parseFloat(match[1]);
+                currentTransform.y = parseFloat(match[2]);
+            }}
+       
+        offset.x = cursor.x - currentTransform.x;
+        offset.y = cursor.y - currentTransform.y;
     });
     
     document.addEventListener("mousemove", (event) => {
         if (!isDragging) return;
 
-        let svg = component.closest("svg");
-        let point = svg.createSVGPoint();
+        const point = svg.createSVGPoint();
         point.x = event.clientX;
         point.y = event.clientY;
-        let transformPoint = point.matrixTransform(svg.getScreenCTM().inverse());
+        const cursor = point.matrixTransform(svg.getScreenCTM().inverse());
 
-        let x = transformPoint.x - offsetX;
-        let y = transformPoint.y - offsetY;
+        const x = cursor.x - offset.x;
+        const y = cursor.y - offset.y;
 
-        component.setAttribute("transform", `translate(${x},${y})`);
+        svg.setAttribute("transform", `translate(${x},${y})`);
     });
 
     document.addEventListener("mouseup", () => isDragging = false);
