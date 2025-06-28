@@ -1,24 +1,5 @@
-const resistorCount = 5;
+const resistorCount = 1;
 var selectedComponent = null;
-
-// fetch("component images/resistor.svg")
-//     .then(response => response.text())
-//     .then(svgText => {
-//         const parser = new DOMParser();
-//         const doc = parser.parseFromString(svgText, "image/svg+xml");
-//         const gElement = doc.querySelector("g");
-
-//         const gameArea = document.getElementById("gameArea");
-//         gameArea.innerHTML = "";
-        
-//         for(let i = 0; i < resistorCount; i++){
-//             const clone = gElement.cloneNode(true);
-//             clone.setAttribute("data-index", i);
-//             gameArea.appendChild(clone);
-//             enableDragging(clone); //TODO: enable dragging for the original (non-clone as well!)
-//             //enableFlip(clone);
-//         }
-//     });
 
 fetch("component images/rotationTest.svg")
     .then(response => response.text())
@@ -26,21 +7,56 @@ fetch("component images/rotationTest.svg")
         const parser = new DOMParser();
         const doc = parser.parseFromString(svgText, "image/svg+xml");
         const gElement = doc.querySelector("g");
-        gElement.setAttribute("data-lastFlipped-x", null);
-        gElement.setAttribute("data-lastFlipped-y", null);
-        const gameArea = document.getElementById("gameArea");
-        gameArea.appendChild(gElement);
 
-        enableFlip(gElement);
+        const gameArea = document.getElementById("gameArea");
+        gameArea.innerHTML = "";
+        
+        for(let i = 0; i < resistorCount; i++){
+            const clone = gElement.cloneNode(true);
+            clone.setAttribute("data-index", i);
+            gElement.setAttribute("data-lastFlipped-x", null);
+            gElement.setAttribute("data-lastFlipped-y", null);
+            //gElement.setAttribute("transform-origin", "center");
+            gameArea.appendChild(clone);
+            enableDragging(clone);
+        }
+
+        enableFlip();
     });
 
+// fetch("component images/rotationTest.svg")
+//     .then(response => response.text())
+//     .then(svgText => {
+//         const parser = new DOMParser();
+//         const doc = parser.parseFromString(svgText, "image/svg+xml");
+//         const gElement = doc.querySelector("g");
+//         gElement.setAttribute("data-lastFlipped-x", null);
+//         gElement.setAttribute("data-lastFlipped-y", null);
+//         const gameArea = document.getElementById("gameArea");
+//         gameArea.appendChild(gElement);
+
+//         enableFlip(gElement);
+//     });
+
 function flipHorizontally(component){
+    let id = component.getAttribute("data-index");
+
     const bbox = component.getBBox();
 
     const tx = bbox.x + bbox.width / 2;
     const ty = bbox.y + bbox.height / 2;
 
     let scaleX = 1, scaleY = 1;
+    let translateX = 1, translateY = 1;
+
+    // let offset = { x: 0, y: 0 };
+    // const point = svg.createSVGPoint();
+    // point.x = event.clientX;
+    // point.y = event.clientY;
+    // const cursor = point.matrixTransform(svg.getScreenCTM().inverse());
+
+    // offset.x = cursor.x - currentTransform.x;
+    // offset.y = cursor.y - currentTransform.y;
 
     const transform = component.getAttribute("transform");
         if (transform) {
@@ -53,15 +69,27 @@ function flipHorizontally(component){
                 scaleX = -1;
             }
 
-            component.setAttribute("transform", `translate(${tx}, ${ty}) scale(${scaleX}, ${scaleY}) translate(${-tx}, ${-ty})`);
+            const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
+            if (translateMatch) {
+                translateX = parseFloat(translateMatch[1]);
+                translateY = parseFloat(translateMatch[2]);
+            }
+            component.setAttribute("transform", `translate(${tx}, 0), scale(${scaleX}, ${scaleY}), translate(${-tx}, 0)`);
         }
 }
 
-function flipVertically(component){
+function flipVertically(component, event){
     const bbox = component.getBBox();
 
     const tx = bbox.x + bbox.width / 2;
     const ty = bbox.y + bbox.height / 2;
+
+    const minX = bbox.x;
+    const maxX = bbox.x + bbox.width;
+
+    const minY = bbox.y;
+    const maxY = bbox.y + bbox.height;
+    
 
     let scaleX = 1, scaleY = 1;
 
@@ -75,43 +103,43 @@ function flipVertically(component){
             else{
                 scaleY = -1;
             }
-
-            component.setAttribute("transform", `translate(${tx}, ${ty}) scale(${scaleX}, ${scaleY}) translate(${-tx}, ${-ty})`);
+            component.setAttribute("transform", `translate(0, ${ty}), scale(${scaleX}, ${scaleY}), translate(0, ${-ty})`);
+            //component.setAttribute("transform", `scale(${scaleX}, ${scaleY})`);
         }
 }
 
-function enableFlip(component){
+function enableFlip(){
     document.addEventListener("keydown", (event) => {
-        //if(!selectedComponent) return;
+        if(!selectedComponent) return;
         
         const key = event.key;
 
-        let lastXFlipDirection = component.getAttribute("data-lastFlipped-x");
-        let lastYFlipDirection = component.getAttribute("data-lastFlipped-y");
+        let lastXFlipDirection = selectedComponent.getAttribute("data-lastFlipped-x");
+        let lastYFlipDirection = selectedComponent.getAttribute("data-lastFlipped-y");
 
         switch(key){
             case "ArrowRight":
                 if (lastXFlipDirection !== "right") {
-                    flipHorizontally(component);
-                    component.setAttribute("data-lastFlipped-x", "right");
+                    flipHorizontally(selectedComponent);
+                    selectedComponent.setAttribute("data-lastFlipped-x", "right");
                 }
                 break;
             case "ArrowLeft":
                 if (lastXFlipDirection !== "left") {
-                    flipHorizontally(component);
-                    component.setAttribute("data-lastFlipped-x", "left");
+                    flipHorizontally(selectedComponent);
+                    selectedComponent.setAttribute("data-lastFlipped-x", "left");
                 }
                 break;
             case "ArrowUp":
                 if (lastYFlipDirection !== "up") {
-                    flipVertically(component);
-                    component.setAttribute("data-lastFlipped-y", "up");
+                    flipVertically(selectedComponent);
+                    selectedComponent.setAttribute("data-lastFlipped-y", "up");
                 }
                 break;
             case "ArrowDown":
                 if (lastYFlipDirection !== "down") {
-                    flipVertically(component);
-                    component.setAttribute("data-lastFlipped-y", "down");
+                    flipVertically(selectedComponent);
+                    selectedComponent.setAttribute("data-lastFlipped-y", "down");
                 }
                 break;
             default:
