@@ -16,7 +16,6 @@ fetch("component images/rotationTest.svg")
             clone.setAttribute("data-index", i);
             gElement.setAttribute("data-lastFlipped-x", null);
             gElement.setAttribute("data-lastFlipped-y", null);
-            //gElement.setAttribute("transform-origin", "center");
             gameArea.appendChild(clone);
             enableDragging(clone);
         }
@@ -39,12 +38,6 @@ fetch("component images/rotationTest.svg")
 //     });
 
 function flipHorizontally(component){
-
-    const bbox = component.getBBox();
-
-    const tx = bbox.x + bbox.width / 2;
-    const ty = bbox.y + bbox.height / 2;
-
     let scaleX = 1, scaleY = 1;
 
     const transform = component.getAttribute("transform");
@@ -58,21 +51,11 @@ function flipHorizontally(component){
                 scaleX = -1;
             }
 
-            const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
-            if (translateMatch) {
-                translateX = parseFloat(translateMatch[1]);
-                translateY = parseFloat(translateMatch[2]);
-            }
-            component.setAttribute("transform", `translate(${translateX}, ${translateY}), translate(${tx}, ${ty}), scale(${scaleX}, ${scaleY}), translate(${-tx}, ${-ty})`);
+         flip(component, transform, scaleX, scaleY);
         }
 }
 
 function flipVertically(component, event){
-    const bbox = component.getBBox();
-
-    const tx = bbox.x + bbox.width / 2;
-    const ty = bbox.y + bbox.height / 2;
-
     let scaleX = 1, scaleY = 1;
 
     const transform = component.getAttribute("transform");
@@ -85,6 +68,15 @@ function flipVertically(component, event){
             else{
                 scaleY = -1;
             }
+            flip(component, transform, scaleX, scaleY);
+        }
+}
+
+function flip(component, transform, scaleX, scaleY){
+    const bbox = component.getBBox();
+
+    const tx = bbox.x + bbox.width / 2;
+    const ty = bbox.y + bbox.height / 2;
 
             const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
             if (translateMatch) {
@@ -93,7 +85,7 @@ function flipVertically(component, event){
             }
             component.setAttribute("transform", `translate(${translateX}, ${translateY}), translate(${tx}, ${ty}), scale(${scaleX}, ${scaleY}), translate(${-tx}, ${-ty})`);
         }
-}
+
 
 function enableFlip(){
     document.addEventListener("keydown", (event) => {
