@@ -63,7 +63,7 @@ function flipHorizontally(component){
                 translateX = parseFloat(translateMatch[1]);
                 translateY = parseFloat(translateMatch[2]);
             }
-            component.setAttribute("transform", `translate(${tx}, ${ty}), scale(${scaleX}, ${scaleY}), translate(${-tx}, ${-ty})`);
+            component.setAttribute("transform", `translate(${translateX}, ${translateY}), translate(${tx}, ${ty}), scale(${scaleX}, ${scaleY}), translate(${-tx}, ${-ty})`);
         }
 }
 
@@ -91,7 +91,7 @@ function flipVertically(component, event){
                 translateX = parseFloat(translateMatch[1]);
                 translateY = parseFloat(translateMatch[2]);
             }
-            component.setAttribute("transform", `translate(${tx}, ${ty}), scale(${scaleX}, ${scaleY}), translate(${-tx}, ${-ty})`);
+            component.setAttribute("transform", `translate(${translateX}, ${translateY}), translate(${tx}, ${ty}), scale(${scaleX}, ${scaleY}), translate(${-tx}, ${-ty})`);
         }
 }
 
