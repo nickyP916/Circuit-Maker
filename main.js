@@ -39,7 +39,6 @@ fetch("component images/rotationTest.svg")
 //     });
 
 function flipHorizontally(component){
-    let id = component.getAttribute("data-index");
 
     const bbox = component.getBBox();
 
@@ -47,16 +46,6 @@ function flipHorizontally(component){
     const ty = bbox.y + bbox.height / 2;
 
     let scaleX = 1, scaleY = 1;
-    let translateX = 1, translateY = 1;
-
-    // let offset = { x: 0, y: 0 };
-    // const point = svg.createSVGPoint();
-    // point.x = event.clientX;
-    // point.y = event.clientY;
-    // const cursor = point.matrixTransform(svg.getScreenCTM().inverse());
-
-    // offset.x = cursor.x - currentTransform.x;
-    // offset.y = cursor.y - currentTransform.y;
 
     const transform = component.getAttribute("transform");
         if (transform) {
@@ -74,7 +63,7 @@ function flipHorizontally(component){
                 translateX = parseFloat(translateMatch[1]);
                 translateY = parseFloat(translateMatch[2]);
             }
-            component.setAttribute("transform", `translate(${tx}, 0), scale(${scaleX}, ${scaleY}), translate(${-tx}, 0)`);
+            component.setAttribute("transform", `translate(${tx}, ${ty}), scale(${scaleX}, ${scaleY}), translate(${-tx}, ${-ty})`);
         }
 }
 
@@ -83,13 +72,6 @@ function flipVertically(component, event){
 
     const tx = bbox.x + bbox.width / 2;
     const ty = bbox.y + bbox.height / 2;
-
-    const minX = bbox.x;
-    const maxX = bbox.x + bbox.width;
-
-    const minY = bbox.y;
-    const maxY = bbox.y + bbox.height;
-    
 
     let scaleX = 1, scaleY = 1;
 
@@ -103,8 +85,13 @@ function flipVertically(component, event){
             else{
                 scaleY = -1;
             }
-            component.setAttribute("transform", `translate(0, ${ty}), scale(${scaleX}, ${scaleY}), translate(0, ${-ty})`);
-            //component.setAttribute("transform", `scale(${scaleX}, ${scaleY})`);
+
+            const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
+            if (translateMatch) {
+                translateX = parseFloat(translateMatch[1]);
+                translateY = parseFloat(translateMatch[2]);
+            }
+            component.setAttribute("transform", `translate(${tx}, ${ty}), scale(${scaleX}, ${scaleY}), translate(${-tx}, ${-ty})`);
         }
 }
 
