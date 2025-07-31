@@ -55,7 +55,7 @@ function flipHorizontally(component){
         }
 }
 
-function flipVertically(component, event){
+function flipVertically(component){
     let scaleX = 1, scaleY = 1;
 
     const transform = component.getAttribute("transform");
@@ -79,6 +79,9 @@ function flip(component, transform, scaleX, scaleY){
     const ty = bbox.y + bbox.height / 2;
 
             const translateMatch = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
+            
+            let translateX = 0;
+            let translateY = 0;
             if (translateMatch) {
                 translateX = parseFloat(translateMatch[1]);
                 translateY = parseFloat(translateMatch[2]);
@@ -88,7 +91,11 @@ function flip(component, transform, scaleX, scaleY){
 
 
 function enableFlip(){
-    document.addEventListener("keydown", (event) => {
+    const container = document.getElementById("focusableContainer");
+    container.focus();
+    container.addEventListener("keydown", (event) => {
+        event.preventDefault();
+
         if(!selectedComponent) return;
         
         const key = event.key;
